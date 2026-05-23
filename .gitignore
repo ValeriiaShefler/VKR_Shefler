@@ -47,6 +47,7 @@ desktop.ini
 $RECYCLE.BIN/
 
 .directory
+saved_models/
 
 *.db
 *.sqlite
