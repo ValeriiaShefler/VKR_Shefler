@@ -1,0 +1,96 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #1e2a3a;
+    margin: 0;
+    padding: 20px;
+    color: #e2e8f0;
+}
+.container {
+    max-width: 1000px;
+    margin: auto;
+    background: #0f172a;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+h1 {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+}
+.tabs {
+    display: flex;
+    gap: 10px;
+    border-bottom: 2px solid #334155;
+    margin-bottom: 20px;
+}
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    color: #94a3b8;
+    transition: 0.3s;
+}
+.tab-btn.active {
+    color: #3b82f6;
+    border-bottom: 2px solid #3b82f6;
+}
+.tab-content {
+    display: none;
+    animation: fade 0.3s;
+}
+.tab-content.active {
+    display: block;
+}
+@keyframes fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+.input-group {
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.input-group label {
+    font-weight: bold;
+}
+input, button {
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: #f1f5f9;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+button {
+    cursor: pointer;
+    background: #3b82f6;
+    border: none;
+    transition: 0.2s;
+}
+button:hover {
+    background: #2563eb;
+}
+.result-card {
+    background: #1e293b;
+    padding: 15px;
+    border-radius: 12px;
+    margin-top: 15px;
+}
+.status {
+    margin-top: 10px;
+    font-style: italic;
+}
+#verify_table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+#verify_table th, #verify_table td {
+    border: 1px solid #334155;
+    padding: 8px;
+    text-align: center;
+}

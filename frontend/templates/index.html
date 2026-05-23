@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Цифровая модель МСА с ИИ</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>🌍 Моделирование Международной стандартной атмосферы</h1>
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="calc">Калькулятор МСА</button>
+            <button class="tab-btn" data-tab="ai">ИИ-аппроксимация</button>
+            <button class="tab-btn" data-tab="verify">Верификация</button>
+            <button class="tab-btn" data-tab="export">Экспорт</button>
+        </div>
+
+        <!-- Вкладка 1 -->
+        <div id="calc" class="tab-content active">
+            <h2>Эталонный расчёт (ГОСТ 4401-81 / ISO 2533)</h2>
+            <div class="input-group">
+                <label>Высота (м):</label>
+                <input type="number" id="height_calc" value="5000" step="100">
+                <button id="calc_isa_btn">Рассчитать</button>
+            </div>
+            <div id="isa_result" class="result-card">
+                <p>Температура: <span id="isa_T">--</span> K</p>
+                <p>Давление: <span id="isa_P">--</span> Pa</p>
+                <p>Плотность: <span id="isa_rho">--</span> kg/m³</p>
+                <p>Скорость звука: <span id="isa_a">--</span> m/s</p>
+            </div>
+            <canvas id="tempChart" width="600" height="300"></canvas>
+        </div>
+
+        <!-- Вкладка 2 -->
+        <div id="ai" class="tab-content">
+            <h2>ИИ-аппроксимация (MLP нейросеть)</h2>
+            <button id="train_ai_btn">🔄 Обучить нейросеть</button>
+            <div id="train_status" style="margin-top: 15px; padding: 10px; border-radius: 8px; background: #1e293b; display: none;">
+                <span id="train_status_text"></span>
+            </div>
+            <div class="input-group">
+                <label>Высота (м):</label>
+                <input type="number" id="height_ai" value="5000" step="100">
+                <button id="predict_ai_btn">Предсказать</button>
+            </div>
+            <div id="ai_result" class="result-card">
+                <p>Температура (ИИ): <span id="ai_T">--</span> K</p>
+                <p>Давление (ИИ): <span id="ai_P">--</span> Pa</p>
+                <p>Плотность (ИИ): <span id="ai_rho">--</span> kg/m³</p>
+                <p>Скорость звука (ИИ): <span id="ai_a">--</span> m/s</p>
+            </div>
+        </div>
+
+        <!-- Вкладка 3 -->
+        <div id="verify" class="tab-content">
+            <h2>Верификация и валидация ИИ-модели</h2>
+            <button id="verify_btn">📊 Получить метрики</button>
+            <div id="verify_table"></div>
+        </div>
+
+        <!-- Вкладка 4 -->
+        <div id="export" class="tab-content">
+            <h2>Экспорт данных для производства</h2>
+            <p>Скачать полный профиль атмосферы (0..20000 м, шаг 100 м):</p>
+            <button id="export_csv">CSV</button>
+            <button id="export_json">JSON</button>
+            <button id="export_xml">XML</button>
+            <button id="export_txt">TXT</button>
+        </div>
+    </div>
+    <script src="/static/script.js"></script>
+</body>
+</html>
