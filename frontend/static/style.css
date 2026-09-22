@@ -1,17 +1,53 @@
+/* CSS-переменные для тёмной темы (по умолчанию) */
+:root {
+    --bg-body: #0f172a;
+    --bg-container: #0f172a;
+    --bg-card: #1e293b;
+    --text-primary: #e2e8f0;
+    --text-secondary: #94a3b8;
+    --border-color: #334155;
+    --btn-bg: #3b82f6;
+    --btn-hover: #2563eb;
+    --tab-inactive: #94a3b8;
+    --tab-active: #3b82f6;
+    --input-bg: #1e293b;
+    --input-border: #334155;
+    --input-text: #f1f5f9;
+}
+
+/* Светлая тема */
+body.light-mode {
+    --bg-body: #f8fafc;
+    --bg-container: #ffffff;
+    --bg-card: #f1f5f9;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --border-color: #cbd5e1;
+    --btn-bg: #2563eb;
+    --btn-hover: #1d4ed8;
+    --tab-inactive: #64748b;
+    --tab-active: #2563eb;
+    --input-bg: #ffffff;
+    --input-border: #cbd5e1;
+    --input-text: #0f172a;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #1e2a3a;
+    background: var(--bg-body);
     margin: 0;
     padding: 20px;
-    color: #e2e8f0;
+    color: var(--text-primary);
+    transition: background 0.3s, color 0.3s;
 }
 .container {
     max-width: 1000px;
     margin: auto;
-    background: #0f172a;
+    background: var(--bg-container);
     border-radius: 20px;
     padding: 20px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    transition: background 0.3s;
 }
 h1 {
     text-align: center;
@@ -21,7 +57,7 @@ h1 {
 .tabs {
     display: flex;
     gap: 10px;
-    border-bottom: 2px solid #334155;
+    border-bottom: 2px solid var(--border-color);
     margin-bottom: 20px;
 }
 .tab-btn {
@@ -30,12 +66,12 @@ h1 {
     padding: 10px 20px;
     font-size: 1rem;
     cursor: pointer;
-    color: #94a3b8;
+    color: var(--tab-inactive);
     transition: 0.3s;
 }
 .tab-btn.active {
-    color: #3b82f6;
-    border-bottom: 2px solid #3b82f6;
+    color: var(--tab-active);
+    border-bottom: 2px solid var(--tab-active);
 }
 .tab-content {
     display: none;
@@ -58,31 +94,29 @@ h1 {
     font-weight: bold;
 }
 input, button {
-    background: #1e293b;
-    border: 1px solid #334155;
-    color: #f1f5f9;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--input-text);
     padding: 8px 15px;
     border-radius: 8px;
     font-size: 1rem;
+    transition: background 0.3s, color 0.3s, border 0.3s;
 }
 button {
     cursor: pointer;
-    background: #3b82f6;
+    background: var(--btn-bg);
     border: none;
     transition: 0.2s;
 }
 button:hover {
-    background: #2563eb;
+    background: var(--btn-hover);
 }
 .result-card {
-    background: #1e293b;
+    background: var(--bg-card);
     padding: 15px;
     border-radius: 12px;
     margin-top: 15px;
-}
-.status {
-    margin-top: 10px;
-    font-style: italic;
+    transition: background 0.3s;
 }
 #verify_table table {
     width: 100%;
@@ -90,7 +124,46 @@ button:hover {
     margin-top: 15px;
 }
 #verify_table th, #verify_table td {
-    border: 1px solid #334155;
+    border: 1px solid var(--border-color);
     padding: 8px;
     text-align: center;
+}
+/* Стили для графика (Chart.js автоматически адаптируется) */
+canvas {
+    background: transparent;
+}
+
+/* ПРИНУДИТЕЛЬНАЯ СВЕТЛАЯ ТЕМА */
+body.light-mode,
+body.light-mode .container,
+body.light-mode .result-card,
+body.light-mode input,
+body.light-mode button,
+body.light-mode .tabs,
+body.light-mode .tab-content {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+
+body.light-mode .tab-btn {
+    color: #b6b7ba !important; /* тёмно-синий, хорошо видно на светлом фоне */
+}
+body.light-mode .tab-btn.active {
+    color: #ffffff !important; /* синий для активной вкладки */
+}
+
+body.light-mode input,
+body.light-mode button {
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+}
+
+body.light-mode button {
+    background-color: #2563eb !important;
+    color: #ffffff !important;
+}
+
+body.light-mode button:hover {
+    background-color: #1d4ed8 !important;
 }

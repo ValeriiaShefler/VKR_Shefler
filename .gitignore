@@ -58,3 +58,5 @@ postgres_data/
 *.temp
 *.bak
 *.backup
+
+python/

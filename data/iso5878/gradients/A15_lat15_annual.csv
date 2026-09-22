@@ -1,0 +1,15 @@
+latitude_deg,season,H_geopotential_km,temperature_K,gradient_K_per_km
+15,Annual,0.0,299.65,0.0
+15,Annual,2.25,286.15,6.0
+15,Annual,2.5,286.95,3.2
+15,Annual,16.5,193.15,-6.7
+15,Annual,22.0,215.15,4.0
+15,Annual,30.0,231.15,2.0
+15,Annual,40.0,259.15,2.8
+15,Annual,46.0,272.35,2.2
+15,Annual,51.0,272.35,0.0
+15,Annual,54.0,265.15,2.4
+15,Annual,60.0,247.15,3.0
+15,Annual,66.0,226.15,3.5
+15,Annual,73.0,205.15,3.0
+15,Annual,80.0,198.15,-1.0

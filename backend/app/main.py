@@ -7,9 +7,9 @@ from starlette.requests import Request
 import os
 import sys
 
-from .routes import isa, ai, verify, export
+from .routes import isa, ai, verify, export, datasets, reference
 
-app = FastAPI(title="ISA AI Model API", version="1.0", description="Цифровая модель МСА с ИИ-аппроксимацией")
+app = FastAPI(title="ISA AI Model API", version="1.4", description="Цифровая модель МСА с ИИ-аппроксимацией")
 
 # CORS для фронтенда
 app.add_middleware(
@@ -24,6 +24,8 @@ app.include_router(isa.router)
 app.include_router(ai.router)
 app.include_router(verify.router)
 app.include_router(export.router)
+app.include_router(datasets.router)
+app.include_router(reference.router)
 
 # Поиск папки frontend
 def get_frontend_path():

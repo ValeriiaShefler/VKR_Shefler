@@ -3,74 +3,279 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Цифровая модель МСА с ИИ</title>
+    <title>MSA Studio — Моделирование стандартной атмосферы</title>
     <link rel="stylesheet" href="/static/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>🌍 Моделирование Международной стандартной атмосферы</h1>
+        <div class="header">
+            <h1>🌍 MSA Studio</h1>
+            <p class="subtitle">Моделирование параметров стандартной атмосферы с использованием ML</p>
+            <button id="theme-toggle" class="theme-btn">🌙</button>
+        </div>
+
+        <!-- ============ ВКЛАДКИ ============ -->
         <div class="tabs">
-            <button class="tab-btn active" data-tab="calc">Калькулятор МСА</button>
-            <button class="tab-btn" data-tab="ai">ИИ-аппроксимация</button>
-            <button class="tab-btn" data-tab="verify">Верификация</button>
+            <button class="tab-btn active" data-tab="calculator">Калькулятор</button>
+            <button class="tab-btn" data-tab="range">Интервал</button>
+            <button class="tab-btn" data-tab="charts">Графики</button>
+            <button class="tab-btn" data-tab="training">ИИ: обучение</button>
+            <button class="tab-btn" data-tab="validation">Валидация</button>
             <button class="tab-btn" data-tab="export">Экспорт</button>
         </div>
 
-        <!-- Вкладка 1 -->
-        <div id="calc" class="tab-content active">
-            <h2>Эталонный расчёт (ГОСТ 4401-81 / ISO 2533)</h2>
-            <div class="input-group">
+        <!-- ============ ВКЛАДКА 1: КАЛЬКУЛЯТОР ============ -->
+        <div id="calculator" class="tab-content active">
+            <h2>Калькулятор (расчёт по точке)</h2>
+
+            <div class="form-row">
+                <label>Датасет:</label>
+                <select id="calc-dataset">
+                    <option value="1d">1D — ГОСТ Р 70469-2026 (высота)</option>
+                    <option value="2d">2D — ISO 5878 (высота + широта)</option>
+                    <option value="3d">3D — ISO 5878 (+ сезон)</option>
+                    <option value="4d">4D — ISO 5878 (+ влажность)</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label>Метод:</label>
+                <select id="calc-method">
+                    <option value="MLP">MLP</option>
+                    <option value="GPR">GPR</option>
+                </select>
+                <button id="calc-train-btn" class="btn-primary">Обучить модель</button>
+                <span id="calc-status" class="status"></span>
+            </div>
+
+            <div class="form-row">
                 <label>Высота (м):</label>
-                <input type="number" id="height_calc" value="5000" step="100">
-                <button id="calc_isa_btn">Рассчитать</button>
+                <input type="number" id="calc-h" value="5000" step="100">
+                <span class="h-hint" id="calc-h-range"></span>
             </div>
-            <div id="isa_result" class="result-card">
-                <p>Температура: <span id="isa_T">--</span> K</p>
-                <p>Давление: <span id="isa_P">--</span> Pa</p>
-                <p>Плотность: <span id="isa_rho">--</span> kg/m³</p>
-                <p>Скорость звука: <span id="isa_a">--</span> m/s</p>
+
+            <div class="form-row" id="calc-latitude-row" style="display:none">
+                <label>Широта (°):</label>
+                <input type="number" id="calc-latitude" value="45" step="5">
             </div>
-            <canvas id="tempChart" width="600" height="300"></canvas>
+
+            <div class="form-row" id="calc-season-row" style="display:none">
+                <label>Сезон:</label>
+                <select id="calc-season">
+                    <option value="winter">Зима</option>
+                    <option value="summer">Лето</option>
+                    <option value="annual">Год</option>
+                </select>
+            </div>
+
+            <div class="form-row" id="calc-w-row" style="display:none">
+                <label>Влажность (0..1):</label>
+                <input type="number" id="calc-w" value="0.5" step="0.1" min="0" max="1">
+            </div>
+
+            <button id="calc-predict-btn" class="btn-primary">Рассчитать</button>
+
+            <div class="result-card" id="calc-result">
+                <h3>Результат</h3>
+                <p>Температура: <span id="calc-T">--</span> К</p>
+                <p>Давление: <span id="calc-P">--</span> Па</p>
+                <p>Плотность: <span id="calc-rho">--</span> кг/м³</p>
+                <p>Скорость звука: <span id="calc-a">--</span> м/с</p>
+            </div>
         </div>
 
-        <!-- Вкладка 2 -->
-        <div id="ai" class="tab-content">
-            <h2>ИИ-аппроксимация (MLP нейросеть)</h2>
-            <button id="train_ai_btn">🔄 Обучить нейросеть</button>
-            <div id="train_status" style="margin-top: 15px; padding: 10px; border-radius: 8px; background: #1e293b; display: none;">
-                <span id="train_status_text"></span>
+        <!-- ============ ВКЛАДКА 2: ИНТЕРВАЛ ============ -->
+        <div id="range" class="tab-content">
+            <h2>Расчёт по интервалу высот</h2>
+
+            <div class="form-row">
+                <label>Начало (м):</label>
+                <input type="number" id="range-h-start" value="0" step="100">
+                <label>Конец (м):</label>
+                <input type="number" id="range-h-end" value="20000" step="100">
+                <label>Шаг (м):</label>
+                <input type="number" id="range-h-step" value="500" step="100">
             </div>
-            <div class="input-group">
-                <label>Высота (м):</label>
-                <input type="number" id="height_ai" value="5000" step="100">
-                <button id="predict_ai_btn">Предсказать</button>
+
+            <div class="form-row">
+                <label>Широта (°):</label>
+                <input type="number" id="range-latitude" value="45" step="5">
+                <label>Сезон:</label>
+                <select id="range-season">
+                    <option value="annual">Год</option>
+                    <option value="winter">Зима</option>
+                    <option value="summer">Лето</option>
+                </select>
+                <label>Влажность:</label>
+                <input type="number" id="range-w" value="0.5" step="0.1" min="0" max="1">
             </div>
-            <div id="ai_result" class="result-card">
-                <p>Температура (ИИ): <span id="ai_T">--</span> K</p>
-                <p>Давление (ИИ): <span id="ai_P">--</span> Pa</p>
-                <p>Плотность (ИИ): <span id="ai_rho">--</span> kg/m³</p>
-                <p>Скорость звука (ИИ): <span id="ai_a">--</span> m/s</p>
+
+            <button id="range-calc-btn" class="btn-primary">Рассчитать интервал</button>
+            <button id="range-export-btn" class="btn-secondary">💾 Экспорт в CSV</button>
+
+            <div class="table-container">
+                <table id="range-table">
+                    <thead>
+                        <tr>
+                            <th>h, м</th>
+                            <th>T, К</th>
+                            <th>P, Па</th>
+                            <th>ρ, кг/м³</th>
+                            <th>a, м/с</th>
+                        </tr>
+                    </thead>
+                    <tbody id="range-tbody"></tbody>
+                </table>
             </div>
         </div>
 
-        <!-- Вкладка 3 -->
-        <div id="verify" class="tab-content">
-            <h2>Верификация и валидация ИИ-модели</h2>
-            <button id="verify_btn">📊 Получить метрики</button>
-            <div id="verify_table"></div>
+        <!-- ============ ВКЛАДКА 3: ГРАФИКИ ============ -->
+        <div id="charts" class="tab-content">
+            <h2>Графики параметров</h2>
+
+            <div class="form-row">
+                <label>Датасет:</label>
+                <select id="chart-dataset">
+                    <option value="1d">1D — ГОСТ Р 70469-2026</option>
+                    <option value="2d">2D — ISO 5878</option>
+                    <option value="3d">3D — ISO 5878</option>
+                    <option value="4d">4D — ISO 5878 + влажность</option>
+                </select>
+                <label>Параметр:</label>
+                <select id="chart-param">
+                    <option value="T">Температура (T)</option>
+                    <option value="P">Давление (P)</option>
+                    <option value="rho">Плотность (ρ)</option>
+                    <option value="a">Скорость звука (a)</option>
+                </select>
+                <label>Источник:</label>
+                <select id="chart-source">
+                    <option value="reference">Эталон (ГОСТ/ISO)</option>
+                    <option value="ai">ИИ-модель</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label>Высота от:</label>
+                <input type="number" id="chart-h-min" value="0" step="100">
+                <label>до:</label>
+                <input type="number" id="chart-h-max" value="20000" step="100">
+                <label>Широта:</label>
+                <input type="number" id="chart-latitude" value="45" step="5">
+                <label>Сезон:</label>
+                <select id="chart-season">
+                    <option value="annual">Год</option>
+                    <option value="winter">Зима</option>
+                    <option value="summer">Лето</option>
+                </select>
+            </div>
+
+            <button id="chart-build-btn" class="btn-primary">Построить график</button>
+
+            <div class="chart-container">
+                <canvas id="chart-canvas" width="800" height="400"></canvas>
+            </div>
         </div>
 
-        <!-- Вкладка 4 -->
+        <!-- ============ ВКЛАДКА 4: ОБУЧЕНИЕ ============ -->
+        <div id="training" class="tab-content">
+            <h2>Обучение ИИ-модели</h2>
+
+            <div class="form-row">
+                <label>Датасет:</label>
+                <select id="train-dataset">
+                    <option value="1d">1D — ГОСТ Р 70469-2026</option>
+                    <option value="2d">2D — ISO 5878</option>
+                    <option value="3d">3D — ISO 5878</option>
+                    <option value="4d">4D — ISO 5878 + влажность</option>
+                </select>
+                <label>Метод:</label>
+                <select id="train-method">
+                    <option value="MLP">MLP (многослойный перцептрон)</option>
+                    <option value="GPR">GPR (гауссовский процесс)</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label>Доля теста:</label>
+                <input type="number" id="train-test-size" value="0.2" step="0.05" min="0.05" max="0.5">
+                <button id="train-default-btn" class="btn-secondary">↺ Параметры по умолчанию</button>
+            </div>
+
+            <div id="hyperparams-panel" class="hyperparams-panel"></div>
+
+            <button id="train-btn" class="btn-primary">🚀 Обучить модель</button>
+            <span id="train-status" class="status"></span>
+
+            <div class="result-card" id="train-result" style="display:none">
+                <h3>Модель обучена</h3>
+                <p>Cache key: <code id="train-cache-key"></code></p>
+                <p>Время обучения: <span id="train-time"></span> с</p>
+                <p>MAE (avg): <span id="train-mae"></span></p>
+                <p>R² (avg): <span id="train-r2"></span></p>
+            </div>
+        </div>
+
+        <!-- ============ ВКЛАДКА 5: ВАЛИДАЦИЯ ============ -->
+        <div id="validation" class="tab-content">
+            <h2>Валидация модели</h2>
+
+            <div class="form-row">
+                <label>Обученная модель:</label>
+                <select id="valid-cache-key">
+                    <option value="">— выберите модель —</option>
+                </select>
+                <button id="valid-load-btn" class="btn-primary">Показать метрики</button>
+            </div>
+
+            <div class="result-card" id="valid-result" style="display:none">
+                <h3>Метрики</h3>
+                <p>Датасет: <span id="valid-dataset"></span></p>
+                <p>Метод: <span id="valid-method"></span></p>
+                <p>Стандарт: <span id="valid-standard"></span></p>
+                <table id="valid-table">
+                    <thead>
+                        <tr>
+                            <th>Параметр</th>
+                            <th>MAE</th>
+                            <th>RMSE</th>
+                            <th>R²</th>
+                        </tr>
+                    </thead>
+                    <tbody id="valid-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ============ ВКЛАДКА 6: ЭКСПОРТ ============ -->
         <div id="export" class="tab-content">
-            <h2>Экспорт данных для производства</h2>
-            <p>Скачать полный профиль атмосферы (0..20000 м, шаг 100 м):</p>
-            <button id="export_csv">CSV</button>
-            <button id="export_json">JSON</button>
-            <button id="export_xml">XML</button>
-            <button id="export_txt">TXT</button>
+            <h2>Экспорт данных</h2>
+
+            <div class="result-card">
+                <h3>Полный профиль атмосферы</h3>
+                <p>Выгрузка эталонных данных из ГОСТ Р 70469-2026 / ISO 5878.</p>
+                <div class="form-row">
+                    <label>Датасет:</label>
+                    <select id="export-dataset">
+                        <option value="1d">1D — ГОСТ Р 70469-2026</option>
+                        <option value="2d">2D — ISO 5878</option>
+                        <option value="3d">3D — ISO 5878</option>
+                        <option value="4d">4D — ISO 5878 + влажность</option>
+                    </select>
+                    <label>Формат:</label>
+                    <select id="export-format">
+                        <option value="csv">CSV</option>
+                        <option value="json">JSON</option>
+                        <option value="xml">XML</option>
+                        <option value="txt">TXT</option>
+                    </select>
+                </div>
+                <button id="export-btn" class="btn-primary">💾 Скачать</button>
+            </div>
         </div>
     </div>
+
     <script src="/static/script.js"></script>
 </body>
 </html>
